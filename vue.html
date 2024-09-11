@@ -47,11 +47,10 @@
           }
 
           const insertar = () => {
-            if (nombre.value !== '' && rol.value !== '') {
-              usuarios.value.push({ "rol": rol.value, "name": nombre.value })
-              nombre.value = ''  
-              rol.value = ''    
-            }
+            usuarios.value.push({ "rol": rol.value, "name": nombre.value })
+            nombre.value = ''  
+            rol.value = ''    
+            
           }
 
           return {
