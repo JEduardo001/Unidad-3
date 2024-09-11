@@ -7,62 +7,72 @@
 </head>
 <body>
 
-    <div id="app">
+    <form action="" id="app">
         <ul>
-            <li v-for="user in usuarios" >
+            <li v-for="user in usuarios">
                 {{ user.rol }} - {{ user.name }}
             </li>
         </ul>
-
         <fieldset>
             <span>Nombre:</span>
-            <input type="text" v-model="nombre" placeholder="Escribe tu nombre">
+            <input type="text"  v-model="nombre" placeholder="escribe tu nombre">
             <br>
             <span>Rol:</span>
-            <input type="text" v-model="rol" placeholder="Escribe tu rol">
+            <input type="text"  v-model="rol" placeholder="escribe tu nombre">
+            <!--  <br>
+            <span>Tu nombre: {{ nombre }}</span>
             <br>
-            <button type="button" @click="insertar">Insertar</button>
+            <span>Número 1:</span>
+            <input type="number" id="num1" v-model.number="numero1" placeholder="Dame un número">
+            <br>
+            <span>Número 2:</span>
+            <input type="number" id="num2" v-model.number="numero2" placeholder="Dame un número">
+            <button type="button" @click="sumar">Resultado</button>
+            <br>
+            <span>Resultado: {{ resultado }}</span> -->
+            <button type="button" v-on:click="insertar" >insertar</button>
         </fieldset>
-
         <button type="button" @click="contar">Click {{ contador }}</button>
-    </div>
+    </form>
+ 
+
+
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
+    
     <script>
-      const { createApp, ref } = Vue
-
-      createApp({
-        setup() {
-          const nombre = ref('')
-          const rol = ref('')
-          const contador = ref(0)
-          const usuarios = ref([
-            { "rol": "backend", "name": "Leanne Graham" },
-            { "rol": "frontend", "name": "Eduardo" }
-          ])
-
-          const contar = () => {
-            contador.value++
+        const { createApp, ref } = Vue
+  
+        createApp({
+          data() {
+            return {
+              nombre: "",
+              rol: "",
+              contador: 0,
+              usuarios: [
+                { "rol": "backend", "name": "Leanne Graham" },
+                { "rol": "frontend", "name": "Eduardo" }
+              ]
+            }
+          },
+          methods: {
+            contar() {
+              this.contador++
+            },
+            insertar() {
+              if (this.nombre !== '' && this.rol !== '') {
+                this.usuarios.push({
+                  "rol": this.rol,
+                  "name": this.nombre
+                })
+                // Limpiar los campos
+                this.nombre = ''
+                this.rol = ''
+              }
+            }
           }
-
-          const insertar = () => {
-            usuarios.value.push({ "rol": rol.value, "name": nombre.value })
-            nombre.value = ''  
-            rol.value = ''    
-            
-          }
-
-          return {
-            nombre,
-            rol,
-            contador,
-            usuarios,
-            contar,
-            insertar
-          }
-        }
-      }).mount('#app')
-    </script>
+        }).mount('#app')
+      </script>
 </body>
 </html>
