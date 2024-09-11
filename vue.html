@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+  
+    <form action="" id="app">
+        <fieldset>
+            <span>Nombre:</span>
+            <input type="text" id="nombre" v-model="nombre" placeholder="escribe tu nombre">
+            <br>
+            <span>Tu nombre: {{ nombre }}</span>
+            <br>
+            <span>Número 1:</span>
+            <input type="number" id="num1" v-model.number="numero1" placeholder="Dame un número">
+            <br>
+            <span>Número 2:</span>
+            <input type="number" id="num2" v-model.number="numero2" placeholder="Dame un número">
+            <button type="button" @click="sumar">Resultado</button>
+            <br>
+            <span>Resultado: {{ resultado }}</span>
+
+        </fieldset>
+        <button type="button" @click="contar">Click {{ contador }}</button>
+    </form>
+ 
+
+
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    
+    <script>
+      const { createApp, ref } = Vue
+    
+      createApp({
+        setup() {
+          const message = ref('Hello vue!')
+          var nombre = ref('')
+          const contador = ref(0)
+          const numero1 = ref(0)
+          const numero2 = ref(0)
+          const resultado = ref(0)
+
+          const contar = () =>{
+            contador.value++
+          }
+          const sumar = () =>{
+            resultado.value = numero1.value + numero2.value
+          }
+          return {
+            nombre,
+            contador,
+            contar,
+            numero1,
+            numero2,
+            resultado,
+            sumar
+          }
+        }
+      }).mount('#app')
+    </script>
+</body>
+</html>
