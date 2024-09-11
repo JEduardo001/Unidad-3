@@ -7,59 +7,60 @@
 </head>
 <body>
 
-  
-    <form action="" id="app">
+    <div id="app">
+        <ul>
+            <li v-for="user in usuarios" >
+                {{ user.rol }} - {{ user.name }}
+            </li>
+        </ul>
+
         <fieldset>
             <span>Nombre:</span>
-            <input type="text" id="nombre" v-model="nombre" placeholder="escribe tu nombre">
+            <input type="text" v-model="nombre" placeholder="Escribe tu nombre">
             <br>
-            <span>Tu nombre: {{ nombre }}</span>
+            <span>Rol:</span>
+            <input type="text" v-model="rol" placeholder="Escribe tu rol">
             <br>
-            <span>Número 1:</span>
-            <input type="number" id="num1" v-model.number="numero1" placeholder="Dame un número">
-            <br>
-            <span>Número 2:</span>
-            <input type="number" id="num2" v-model.number="numero2" placeholder="Dame un número">
-            <button type="button" @click="sumar">Resultado</button>
-            <br>
-            <span>Resultado: {{ resultado }}</span>
-
+            <button type="button" @click="insertar">Insertar</button>
         </fieldset>
+
         <button type="button" @click="contar">Click {{ contador }}</button>
-    </form>
- 
-
-
+    </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-    
     <script>
       const { createApp, ref } = Vue
-    
+
       createApp({
         setup() {
-          const message = ref('Hello vue!')
-          var nombre = ref('')
+          const nombre = ref('')
+          const rol = ref('')
           const contador = ref(0)
-          const numero1 = ref(0)
-          const numero2 = ref(0)
-          const resultado = ref(0)
+          const usuarios = ref([
+            { "rol": "backend", "name": "Leanne Graham" },
+            { "rol": "frontend", "name": "Eduardo" }
+          ])
 
-          const contar = () =>{
+          const contar = () => {
             contador.value++
           }
-          const sumar = () =>{
-            resultado.value = numero1.value + numero2.value
+
+          const insertar = () => {
+            if (nombre.value !== '' && rol.value !== '') {
+              usuarios.value.push({ "rol": rol.value, "name": nombre.value })
+              nombre.value = ''  
+              rol.value = ''    
+            }
           }
+
           return {
             nombre,
+            rol,
             contador,
+            usuarios,
             contar,
-            numero1,
-            numero2,
-            resultado,
-            sumar
+            insertar
           }
         }
       }).mount('#app')
