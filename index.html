@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login con Vue.js y JSON</title>
+</head>
+
+<body>
+
+    <form action="" id="app">
+
+        <!-- <ul>
+            <li v-for="user in usuarios" :key="user.username">
+                {{ user.rol }} - {{ user.username }}
+            </li>
+        </ul> -->
+
+        <fieldset>
+            <span>Nombre</span>
+            <input type="text" v-model="nombre" placeholder="Escribe tu nombre"><br>
+
+            <span>Contraseña</span>
+            <input type="password" v-model="password" placeholder="Escribe tu contraseña"><br>
+
+            <button type="button" v-on:click="login">Iniciar Sesión</button>
+        </fieldset>
+
+        <p v-if="mensajeError">{{ mensajeError }}</p>
+        <h1 v-if="usuarioExiste" > {{ usuarioExiste }}</h1>
+
+<!--         <button type="button" @click="contar">Click {{ contador }}</button>
+ -->
+
+    </form>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp, ref } = Vue;
+
+        createApp({
+          data() {
+            return {
+              nombre: "",
+              password: "",
+              usuarios: [],
+              mensajeError: '',
+              usuarioExiste: '',
+            
+            };
+          },
+
+          methods: {
+            contar() {
+              this.contador++;
+            },
+
+            login() {
+                fetch('users.json')
+                .then(response => response.json())
+                .then(users => {
+                    this.usuarios = users; 
+                    const existe = users.map(u => {
+                        if (u.username === this.nombre && u.password === this.password) {
+                            return true; 
+                        } else {
+                            return false; 
+                        }
+                    });
+
+                    if (existe.includes(true)) {
+                        const user = users[existe.indexOf(true)]; 
+                        this.usuarioExiste = `Login exitoso. Bienvenido, ${user.username}!`;
+                        this.mensajeError = '';
+                        this.mostrarFormulario=false;
+                    } else {
+                        this.mensajeError = 'El usuario no existe, comprueba tus datos';
+                        this.usuarioExiste = '';
+                    }                 
+                })
+                .catch(error => {
+                    this.mensajeError = 'Error al cargar los datos';
+                });
+            }
+          }
+        }).mount('#app');
+    </script>
+
+</body>
+</html>
