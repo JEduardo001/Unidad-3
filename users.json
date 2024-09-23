@@ -1,14 +1,19 @@
 [
     {
         "username": "eduardo",
-        "password": "123"
+        "password": "123",
+        "comentario": "hola eduardo"
+
     },
     {
-        "username": "user2",
-        "password": "123"
+        "username": "kiko",
+        "password": "123",
+        "comentario": "hola kiko"
+
     },
     {
-        "username": "user3",
-        "password": "123"
+        "username": "valeria",
+        "password": "123",
+        "comentario": "hola valeria"
     }
 ]

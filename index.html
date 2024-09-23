@@ -73,6 +73,10 @@
                         this.usuarioExiste = `Login exitoso. Bienvenido, ${user.username}!`;
                         this.mensajeError = '';
                         this.mostrarFormulario=false;
+
+                        sessionStorage.setItem('usuario', JSON.stringify(user.username),'contrasena', JSON.stringify(user.password));
+                        alert("Bienvenido", user.username)
+                        window.location.href = 'listaUsers.html';
                     } else {
                         this.mensajeError = 'El usuario no existe, comprueba tus datos';
                         this.usuarioExiste = '';
