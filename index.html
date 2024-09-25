@@ -5,78 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login con Vue.js y JSON</title>
 </head>
-
+<style>
+    #divTabla {
+        width: 100%;
+    }
+    #miTabla {
+        width: 50%; 
+        margin: 0 auto;
+        background-color: lightblue; 
+    }
+    #btnAnadir {
+        margin-left: 350px;
+        margin-top: 50px;
+    }
+    .form-section {
+        margin-top: 20px;
+    }
+</style>
 <body>
 
-    <form action="" id="app">
+<form action="" id="app">
 
-        <!-- <ul>
-            <li v-for="user in usuarios" :key="user.username">
-                {{ user.rol }} - {{ user.username }}
-            </li>
-        </ul> -->
+    <fieldset v-if="showInicioSesion">
+        <span>Nombre</span>
+        <input type="text" v-model="nombre" placeholder="Escribe tu nombre"><br>
 
-        <fieldset>
-            <span>Nombre</span>
-            <input type="text" v-model="nombre" placeholder="Escribe tu nombre"><br>
+        <span>Contraseña</span>
+        <input type="password" v-model="password" placeholder="Escribe tu contraseña"><br>
 
-            <span>Contraseña</span>
-            <input type="password" v-model="password" placeholder="Escribe tu contraseña"><br>
+        <button type="button" v-on:click="login">Iniciar Sesión</button>
+    </fieldset>
 
-            <button type="button" v-on:click="login">Iniciar Sesión</button>
-        </fieldset>
+    <p v-if="mensajeError">{{ mensajeError }}</p>
+    <h1 v-if="usuarioExiste">{{ usuarioExiste }}</h1>
 
-        <p v-if="mensajeError">{{ mensajeError }}</p>
-        <h1 v-if="usuarioExiste" > {{ usuarioExiste }}</h1>
+    <table id="miTabla" border="1" v-if="showTabla">
+        <button type="button" id="btnAnadir" v-if="showTabla" v-on:click="showFormAddUser">Añadir Usuario</button>
 
-<!--         <button type="button" @click="contar">Click {{ contador }}</button>
- -->
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Contraseña</th>
+                <th>Comentario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="usuario in usuarios" :key="usuario.username">
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.password }}</td>
+                <td>{{ usuario.comentario }}</td>
+                <td>
+                    <button type="button" v-on:click="editUser(usuario)">Editar</button>
+                    <button type="button" v-on:click="deleteUser(usuario.username)">Eliminar</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-    </form>
+    <div  v-if="showAddUser">
+        <h2>Añadir Usuario</h2>
+        <span>Nombre</span>
+        <input type="text" v-model="nombre" placeholder="Escribe tu nombre"><br>
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script>
-        const { createApp, ref } = Vue;
+        <span>Comentario</span>
+        <input type="text" v-model="comentario" placeholder="Escribe tu comentario"><br>
 
-        createApp({
-          data() {
+        <span>Contraseña</span>
+        <input type="password" v-model="password" placeholder="Escribe tu contraseña"><br>
+
+        <button type="button" v-on:click="addUser">Agregar</button>
+    </div>
+
+    <div  v-if="showEditUser">
+        <h2>Editar Usuario</h2>
+        <span>Nombre</span>
+        <input type="text" v-model="editNombre" placeholder="Escribe el nuevo nombre"><br>
+
+        <span>Comentario</span>
+        <input type="text" v-model="editComentario" placeholder="Escribe el nuevo comentario"><br>
+
+        <span>Contraseña</span>
+        <input type="password" v-model="editPassword" placeholder="Escribe la nueva contraseña"><br>
+
+        <button type="button" v-on:click="updateUser">Actualizar</button>
+        <button type="button" v-on:click="cancelEdit">Cancelar</button>
+    </div>
+
+</form>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
             return {
-              nombre: "",
-              password: "",
-              usuarios: [],
-              mensajeError: '',
-              usuarioExiste: '',
-            
+                nombre: "",
+                password: "",
+                comentario: "",
+                editNombre: "",
+                editPassword: "",
+                editComentario: "",
+                showInicioSesion: true,
+                showTabla: false,
+                showAddUser: false,
+                showEditUser: false,
+                usuarios: [],
+                mensajeError: '',
+                usuarioExiste: '',
+                editingUser: null,
             };
-          },
+        },
 
-          methods: {
-            contar() {
-              this.contador++;
-            },
-
+        methods: {
             login() {
                 fetch('users.json')
                 .then(response => response.json())
                 .then(users => {
                     this.usuarios = users; 
-                    const existe = users.map(u => {
-                        if (u.username === this.nombre && u.password === this.password) {
-                            return true; 
-                        } else {
-                            return false; 
-                        }
-                    });
+                    const existe = users.some(u => u.username === this.nombre && u.password === this.password);
 
-                    if (existe.includes(true)) {
-                        const user = users[existe.indexOf(true)]; 
+                    if (existe) {
+                        const user = users.find(u => u.username === this.nombre);
                         this.usuarioExiste = `Login exitoso. Bienvenido, ${user.username}!`;
                         this.mensajeError = '';
-                        this.mostrarFormulario=false;
+                        this.showInicioSesion = false;
+                        this.showTabla = true;
 
-                        sessionStorage.setItem('usuario', JSON.stringify(user.username),'contrasena', JSON.stringify(user.password));
-                        alert("Bienvenido", user.username)
-                        window.location.href = 'listaUsers.html';
+                        localStorage.setItem('usuario', JSON.stringify(user)); 
                     } else {
                         this.mensajeError = 'El usuario no existe, comprueba tus datos';
                         this.usuarioExiste = '';
@@ -85,10 +142,99 @@
                 .catch(error => {
                     this.mensajeError = 'Error al cargar los datos';
                 });
+            },
+
+            showFormAddUser() {
+                this.showAddUser = !this.showAddUser;
+            },
+
+            addUser() {
+                this.showFormAddUser()
+                if (this.nombre && this.password && this.comentario) {
+                    const nuevoUsuario = {
+                        username: this.nombre,
+                        password: this.password,
+                        comentario: this.comentario
+                    };                                        
+                    this.usuarios.push(nuevoUsuario);
+                    this.resetAddForm();
+                } else {
+                    alert('Por favor completa todos los campos');
+                }
+            },
+
+            deleteUser(username) {
+                this.usuarios = this.usuarios.filter(usuario => usuario.username !== username);
+                alert(`Usuario ${username} eliminado.`);
+            },
+
+            editUser(usuario) {
+                this.editNombre = usuario.username;
+                this.editPassword = usuario.password;
+                this.editComentario = usuario.comentario;
+                this.editingUser = usuario; 
+                this.showEditUser = true; 
+                this.showAddUser = false; 
+            },
+
+            updateUser() {
+                if (this.editingUser) {
+                    const index = this.usuarios.findIndex(usuario => usuario.username === this.editingUser.username);
+                    if (index !== -1) {
+                        this.usuarios[index] = {
+                            username: this.editNombre,
+                            password: this.editPassword,
+                            comentario: this.editComentario
+                        };
+                        alert(`Usuario ${this.editingUser.username} actualizado.`);
+                        this.resetEditForm();
+                    }
+                }
+            },
+
+            cancelEdit() {
+                this.resetEditForm();
+            },
+
+            resetAddForm() {
+                this.nombre = '';
+                this.password = '';
+                this.comentario = '';
+                this.showAddUser = false; 
+            },
+
+            resetEditForm() {
+                this.editNombre = '';
+                this.editPassword = '';
+                this.editComentario = '';
+                this.editingUser = null; 
+                this.showEditUser = false; 
             }
-          }
-        }).mount('#app');
-    </script>
+        },
+
+        mounted() {
+            fetch("users.json")
+            .then(response => response.json())
+            .then(response => {
+                this.usuarios = response; 
+
+                const usuarioGuardado = localStorage.getItem('usuario');
+                if (usuarioGuardado) {
+                    const user = JSON.parse(usuarioGuardado);
+                    const existe = this.usuarios.some(e => e.username === user.username && e.password === user.password);
+                    if (existe) {
+                        this.showInicioSesion = false;
+                        this.showTabla = true;
+                        this.usuarioExiste = `Bienvenido, ${user.username}!`;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar los datos', error);
+            });
+        }
+    }).mount('#app');
+</script>
 
 </body>
 </html>
